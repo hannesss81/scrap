@@ -1,4 +1,5 @@
 from tornado import httpclient, ioloop
+from util import htmlparser
 
 http_client = httpclient.AsyncHTTPClient()
 i = 0
@@ -13,9 +14,7 @@ def open_connections(urls):
 
 def handle_request(response):
     global i
-
-    print("RESP:" + str(response.body))
-
+    htmlparser.concurrent_html.append(response)
     i -= 1
     if i == 0:
         ioloop.IOLoop.instance().stop()

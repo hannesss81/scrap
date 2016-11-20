@@ -1,6 +1,7 @@
-import cherrypy, os, connection
-from mako.template import Template
+import cherrypy, os, threading
 
+from mako.template import Template
+from util import connection, htmlparser
 
 class Index:
     @cherrypy.expose
@@ -16,12 +17,11 @@ class Scrape:
         return Template(filename=getTemplatePath("templates/footemplate.html")).render()
 
 def getTemplatePath(template_name):
-    return os.path.join(parent_dir, template_name)
-
-parent_dir = os.path.abspath(os.pardir)
+    return os.path.join(template_name)
 
 root = Index()          # "/"
 root.scrape = Scrape()  # "/scrape"
 
 if __name__ == '__main__':
+    threading.Thread(target=htmlparser.startParsing, name="HTMLParser").start()
     cherrypy.quickstart(root)
